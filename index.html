@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lotomania Conferidor</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #08111f;
+      --bg-2: #0f1b31;
+      --panel: rgba(12, 20, 38, 0.86);
+      --panel-strong: rgba(17, 29, 53, 0.96);
+      --line: rgba(173, 202, 255, 0.14);
+      --text: #f3f7ff;
+      --muted: #a6b3ce;
+      --accent: #72e5c8;
+      --accent-2: #88a7ff;
+      --good: #56d08e;
+      --warn: #f4c96c;
+      --bad: #ff7f91;
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+      --radius: 22px;
+      --radius-sm: 14px;
+      --font-body: "Trebuchet MS", "Gill Sans", "Segoe UI", sans-serif;
+      --font-head: Georgia, "Times New Roman", serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, rgba(114, 229, 200, 0.18), transparent 24%),
+        radial-gradient(circle at top right, rgba(136, 167, 255, 0.15), transparent 26%),
+        linear-gradient(180deg, #06101c 0%, #090f18 45%, #070c12 100%);
+      color: var(--text);
+      font-family: var(--font-body);
+    }
+
+    body {
+      padding: 24px;
+    }
+
+    .app {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      display: grid;
+      gap: 18px;
+      align-items: end;
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 8px);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)),
+        linear-gradient(180deg, rgba(16, 26, 44, 0.92), rgba(10, 16, 29, 0.95));
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: -30% auto auto -10%;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(114, 229, 200, 0.22), transparent 68%);
+      filter: blur(10px);
+      z-index: -1;
+    }
+
+    .eyebrow {
+      margin: 0;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      color: var(--accent);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-head);
+      font-size: clamp(2.2rem, 4vw, 4.5rem);
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 75ch;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .stat {
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: rgba(8, 12, 22, 0.65);
+      backdrop-filter: blur(14px);
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 6px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.8rem;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .layout {
+      margin-top: 18px;
+      display: grid;
+      gap: 18px;
+      grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.92fr);
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(14, 22, 39, 0.94), rgba(9, 15, 26, 0.92));
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel__head {
+      padding: 22px 22px 0;
+    }
+
+    .panel__head h2 {
+      margin: 0 0 8px;
+      font-family: var(--font-head);
+      font-size: 1.55rem;
+      letter-spacing: -0.02em;
+    }
+
+    .panel__head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .panel__body {
+      padding: 22px;
+    }
+
+    .message {
+      display: none;
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid transparent;
+      font-weight: 600;
+    }
+
+    .message.is-visible {
+      display: block;
+    }
+
+    .message.success {
+      background: rgba(86, 208, 142, 0.12);
+      border-color: rgba(86, 208, 142, 0.35);
+      color: #baf6d2;
+    }
+
+    .message.error {
+      background: rgba(255, 127, 145, 0.12);
+      border-color: rgba(255, 127, 145, 0.35);
+      color: #ffd4db;
+    }
+
+    .message.info {
+      background: rgba(136, 167, 255, 0.11);
+      border-color: rgba(136, 167, 255, 0.33);
+      color: #d6e1ff;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1.2fr 0.8fr;
+      margin-bottom: 18px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      border: 1px solid rgba(173, 202, 255, 0.18);
+      background: rgba(5, 9, 16, 0.72);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 13px 14px;
+      font: inherit;
+      outline: none;
+      transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+    }
+
+    .field input:focus,
+    .field textarea:focus {
+      border-color: rgba(114, 229, 200, 0.72);
+      background: rgba(7, 13, 24, 0.88);
+    }
+
+    .helper-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 0 14px;
+    }
+
+    .helper-text {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(173, 202, 255, 0.16);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font-size: 0.88rem;
+      white-space: nowrap;
+    }
+
+    .pill b {
+      color: var(--accent);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    button {
+      border: 0;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-weight: 700;
+      transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+      transform: none;
+    }
+
+    .btn.primary {
+      color: #03131d;
+      background: linear-gradient(135deg, var(--accent), #b1ffe9);
+      box-shadow: 0 10px 24px rgba(114, 229, 200, 0.25);
+    }
+
+    .btn.secondary {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(173, 202, 255, 0.14);
+    }
+
+    .btn.danger {
+      color: #ffd8df;
+      background: rgba(255, 127, 145, 0.12);
+      border: 1px solid rgba(255, 127, 145, 0.24);
+    }
+
+    .numbers-grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+    }
+
+    .number-chip {
+      min-height: 42px;
+      border-radius: 12px;
+      border: 1px solid rgba(173, 202, 255, 0.14);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    }
+
+    .number-chip:hover {
+      transform: translateY(-1px);
+      border-color: rgba(114, 229, 200, 0.35);
+    }
+
+    .number-chip.is-selected {
+      background: linear-gradient(135deg, rgba(114, 229, 200, 0.92), rgba(136, 167, 255, 0.9));
+      border-color: transparent;
+      color: #03131d;
+      box-shadow: 0 8px 18px rgba(114, 229, 200, 0.18);
+    }
+
+    .number-chip.is-muted {
+      opacity: 0.4;
+    }
+
+    .selected-list {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 44px;
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px dashed rgba(173, 202, 255, 0.16);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .selected-list .chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.2rem;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(114, 229, 200, 0.14);
+      color: #c9fff2;
+      border: 1px solid rgba(114, 229, 200, 0.28);
+      font-weight: 700;
+    }
+
+    .cards {
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(173, 202, 255, 0.12);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015));
+    }
+
+    .card__top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: start;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 1.06rem;
+      letter-spacing: -0.01em;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(173, 202, 255, 0.14);
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 0.84rem;
+      white-space: nowrap;
+    }
+
+    .tag.good {
+      background: rgba(86, 208, 142, 0.11);
+      border-color: rgba(86, 208, 142, 0.28);
+      color: #c8f9db;
+    }
+
+    .tag.warn {
+      background: rgba(244, 201, 108, 0.11);
+      border-color: rgba(244, 201, 108, 0.28);
+      color: #ffe8ab;
+    }
+
+    .tag.bad {
+      background: rgba(255, 127, 145, 0.11);
+      border-color: rgba(255, 127, 145, 0.28);
+      color: #ffcfd6;
+    }
+
+    .card__numbers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 12px 0 0;
+    }
+
+    .mini-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.1rem;
+      padding: 6px 8px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(173, 202, 255, 0.12);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .mini-number.hit {
+      background: rgba(86, 208, 142, 0.16);
+      border-color: rgba(86, 208, 142, 0.32);
+      color: #ccffe0;
+    }
+
+    .mini-number.miss {
+      opacity: 0.58;
+    }
+
+    .card__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .empty-state {
+      padding: 22px;
+      border: 1px dashed rgba(173, 202, 255, 0.18);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .result-box {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(173, 202, 255, 0.12);
+      background: rgba(255, 255, 255, 0.03);
+      margin-bottom: 14px;
+    }
+
+    .result-box strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .result-box p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .footer-note {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 1180px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 960px) {
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .numbers-grid {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 14px;
+      }
+
+      .hero,
+      .panel__body,
+      .panel__head {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .numbers-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .helper-row {
+        align-items: start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <p class="eyebrow">Lotomania | conferência automática</p>
+      <h1>Cadastre suas cartelas, marque os números e confira o resultado do dia.</h1>
+      <p>
+        Este sistema foi pensado para quem compra cartelas na Caixa, seleciona 50 números por cartela e quer comparar
+        rapidamente com os 20 números sorteados. Tudo fica salvo no navegador para uso diário.
+      </p>
+
+      <div class="stats" aria-label="Resumo geral">
+        <div class="stat">
+          <span>Cartelas cadastradas</span>
+          <strong id="statCartelas">0</strong>
+        </div>
+        <div class="stat">
+          <span>Resultado salvo</span>
+          <strong id="statResultado">Não</strong>
+        </div>
+        <div class="stat">
+          <span>Maior acerto</span>
+          <strong id="statMelhor">-</strong>
+        </div>
+        <div class="stat">
+          <span>Cartelas premiadas</span>
+          <strong id="statPremiadas">0</strong>
+        </div>
+      </div>
+    </section>
+
+    <main class="layout">
+      <section class="panel" aria-labelledby="cartelasTitle">
+        <div class="panel__head">
+          <h2 id="cartelasTitle">Cartelas</h2>
+          <p>Cadastre uma cartela por vez. Cada uma precisa ter exatamente 50 números entre 00 e 99.</p>
+        </div>
+
+        <div class="panel__body">
+          <div id="cartelaMessage" class="message" role="status" aria-live="polite"></div>
+
+          <form id="cartelaForm" novalidate>
+            <div class="form-grid">
+              <div class="field">
+                <label for="cartelaNome">Nome da cartela</label>
+                <input id="cartelaNome" name="cartelaNome" type="text" placeholder="Ex.: Cartela João - A" autocomplete="off" />
+              </div>
+              <div class="field">
+                <label for="cartelaData">Data da compra</label>
+                <input id="cartelaData" name="cartelaData" type="date" />
+              </div>
+            </div>
+
+            <div class="helper-row">
+              <div class="helper-text" id="cartelaHelp">Selecione 50 números. Clique em um número já marcado para desmarcar.</div>
+              <div class="pill"><b id="cartelaCount">0</b>/50 números escolhidos</div>
+            </div>
+
+            <div class="toolbar">
+              <button type="button" id="cartelaLimpar" class="btn secondary">Limpar seleção</button>
+              <button type="submit" id="cartelaSalvar" class="btn primary">Salvar cartela</button>
+              <button type="button" id="cartelaCancelar" class="btn secondary" style="display:none;">Cancelar edição</button>
+            </div>
+
+            <div id="cartelaGrid" class="numbers-grid" aria-label="Seleção de números da cartela"></div>
+
+            <div class="selected-list" id="cartelaSelectedList" aria-label="Números selecionados da cartela"></div>
+          </form>
+        </div>
+
+        <div class="panel__body" style="padding-top: 0;">
+          <div class="helper-row">
+            <div>
+              <strong style="display:block; margin-bottom:6px;">Cartelas salvas</strong>
+              <span class="helper-text">Use editar para ajustar uma cartela já cadastrada.</span>
+            </div>
+          </div>
+          <div id="cartelasList" class="cards"></div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="resultadoTitle">
+        <div class="panel__head">
+          <h2 id="resultadoTitle">Resultado do dia</h2>
+          <p>Informe os 20 números sorteados e o sistema mostra automaticamente onde cada cartela bate.</p>
+        </div>
+
+        <div class="panel__body">
+          <div id="resultadoMessage" class="message" role="status" aria-live="polite"></div>
+
+          <form id="resultadoForm" novalidate>
+            <div class="form-grid">
+              <div class="field">
+                <label for="resultadoData">Data do sorteio</label>
+                <input id="resultadoData" name="resultadoData" type="date" />
+              </div>
+              <div class="field">
+                <label>Número de dezenas</label>
+                <input type="text" value="20 dezenas" disabled />
+              </div>
+            </div>
+
+            <div class="helper-row">
+              <div class="helper-text">Selecione 20 números do resultado oficial. O contador evita passar do limite.</div>
+              <div class="pill"><b id="resultadoCount">0</b>/20 números escolhidos</div>
+            </div>
+
+            <div class="toolbar">
+              <button type="button" id="resultadoLimpar" class="btn secondary">Limpar resultado</button>
+              <button type="submit" id="resultadoSalvar" class="btn primary">Salvar resultado</button>
+            </div>
+
+            <div id="resultadoGrid" class="numbers-grid" aria-label="Seleção do resultado do dia"></div>
+
+            <div class="selected-list" id="resultadoSelectedList" aria-label="Números selecionados do resultado"></div>
+          </form>
+
+          <div class="footer-note">
+            A Lotomania premia 20, 19, 18, 17, 16, 15 e também 0 acertos. A conferência abaixo já classifica essas faixas.
+          </div>
+        </div>
+
+        <div class="panel__body" style="padding-top: 0;">
+          <div class="result-box" id="resultadoResumo">
+            <strong>Sem resultado salvo ainda</strong>
+            <p>Depois de registrar as 20 dezenas, a comparação com as cartelas aparece aqui em tempo real.</p>
+          </div>
+          <div id="comparacaoList" class="cards"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEYS = {
+        cartelas: "lotomania_cartelas_v1",
+        resultado: "lotomania_resultado_v1",
+      };
+
+      const PRIZE_HITS = new Set([20, 19, 18, 17, 16, 15, 0]);
+      const TOTAL_NUMBERS = 100;
+      const CARTELA_LIMIT = 50;
+      const RESULTADO_LIMIT = 20;
+
+      const storage = getStorage();
+
+      const els = {
+        statCartelas: document.getElementById("statCartelas"),
+        statResultado: document.getElementById("statResultado"),
+        statMelhor: document.getElementById("statMelhor"),
+        statPremiadas: document.getElementById("statPremiadas"),
+        cartelaForm: document.getElementById("cartelaForm"),
+        cartelaNome: document.getElementById("cartelaNome"),
+        cartelaData: document.getElementById("cartelaData"),
+        cartelaGrid: document.getElementById("cartelaGrid"),
+        cartelaSelectedList: document.getElementById("cartelaSelectedList"),
+        cartelaCount: document.getElementById("cartelaCount"),
+        cartelaSalvar: document.getElementById("cartelaSalvar"),
+        cartelaLimpar: document.getElementById("cartelaLimpar"),
+        cartelaCancelar: document.getElementById("cartelaCancelar"),
+        cartelasList: document.getElementById("cartelasList"),
+        cartelaMessage: document.getElementById("cartelaMessage"),
+        resultadoForm: document.getElementById("resultadoForm"),
+        resultadoData: document.getElementById("resultadoData"),
+        resultadoGrid: document.getElementById("resultadoGrid"),
+        resultadoSelectedList: document.getElementById("resultadoSelectedList"),
+        resultadoCount: document.getElementById("resultadoCount"),
+        resultadoLimpar: document.getElementById("resultadoLimpar"),
+        resultadoSalvar: document.getElementById("resultadoSalvar"),
+        resultadoMessage: document.getElementById("resultadoMessage"),
+        resultadoResumo: document.getElementById("resultadoResumo"),
+        comparacaoList: document.getElementById("comparacaoList"),
+      };
+
+      const state = {
+        cartelas: readJSON(STORAGE_KEYS.cartelas, []),
+        resultado: readJSON(STORAGE_KEYS.resultado, null),
+        cartelaDraft: newDraftCartela(),
+        resultadoDraft: newDraftResultado(),
+        editingId: null,
+      };
+
+      init();
+
+      function init() {
+        const today = todayISO();
+        els.cartelaData.value = today;
+        els.resultadoData.value = today;
+
+        bindEvents();
+        renderAll();
+      }
+
+      function bindEvents() {
+        els.cartelaGrid.addEventListener("click", (event) => {
+          const button = event.target.closest("button[data-number]");
+          if (!button || button.disabled) return;
+          toggleCartelaNumber(Number(button.dataset.number));
+        });
+
+        els.resultadoGrid.addEventListener("click", (event) => {
+          const button = event.target.closest("button[data-number]");
+          if (!button || button.disabled) return;
+          toggleResultadoNumber(Number(button.dataset.number));
+        });
+
+        els.cartelaLimpar.addEventListener("click", () => {
+          resetCartelaDraft();
+          showMessage(els.cartelaMessage, "Seleção da cartela limpa.", "info");
+          renderAll();
+        });
+
+        els.resultadoLimpar.addEventListener("click", () => {
+          resetResultadoDraft();
+          showMessage(els.resultadoMessage, "Resultado do dia limpo.", "info");
+          renderAll();
+        });
+
+        els.cartelaCancelar.addEventListener("click", () => {
+          cancelEdit();
+        });
+
+        els.cartelaForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+          saveCartela();
+        });
+
+        els.resultadoForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+          saveResultado();
+        });
+      }
+
+      function renderAll() {
+        renderNumberGrid(
+          els.cartelaGrid,
+          state.cartelaDraft.numeros,
+          CARTELA_LIMIT,
+        );
+        renderNumberGrid(
+          els.resultadoGrid,
+          state.resultadoDraft.numeros,
+          RESULTADO_LIMIT,
+        );
+
+        renderSelectedList(els.cartelaSelectedList, state.cartelaDraft.numeros);
+        renderSelectedList(els.resultadoSelectedList, state.resultadoDraft.numeros);
+
+        els.cartelaCount.textContent = String(state.cartelaDraft.numeros.size);
+        els.resultadoCount.textContent = String(state.resultadoDraft.numeros.size);
+        els.cartelaSalvar.textContent = state.editingId ? "Atualizar cartela" : "Salvar cartela";
+        els.cartelaCancelar.style.display = state.editingId ? "inline-flex" : "none";
+
+        renderCartelas();
+        renderResultado();
+        renderStats();
+      }
+
+      function renderStats() {
+        els.statCartelas.textContent = String(state.cartelas.length);
+        els.statResultado.textContent = state.resultado ? "Sim" : "Não";
+
+        if (!state.resultado || state.cartelas.length === 0) {
+          els.statMelhor.textContent = "-";
+          els.statPremiadas.textContent = "0";
+          return;
+        }
+
+        const comparisons = compareAll();
+        const best = comparisons.reduce((acc, item) => Math.max(acc, item.hitCount), 0);
+        const premiadas = comparisons.filter((item) => isPrize(item.hitCount)).length;
+
+        els.statMelhor.textContent = `${best} acertos`;
+        els.statPremiadas.textContent = String(premiadas);
+      }
+
+      function renderCartelas() {
+        if (state.cartelas.length === 0) {
+          els.cartelasList.innerHTML = `
+            <div class="empty-state">
+              Nenhuma cartela cadastrada ainda. Preencha o nome, escolha 50 números e clique em <strong>Salvar cartela</strong>.
+            </div>
+          `;
+          return;
+        }
+
+        els.cartelasList.innerHTML = state.cartelas
+          .slice()
+          .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+          .map((cartela) => {
+            const count = cartela.numeros.length;
+            const compare = state.resultado ? compareCartela(cartela, state.resultado) : null;
+            const tag = compare
+              ? getTagMarkup(compare.hitCount)
+              : `<span class="tag">Sem comparação</span>`;
+            const selectedMarkup = cartela.numeros
+              .slice()
+              .sort((a, b) => a - b)
+              .map((n) => `<span class="mini-number">${formatNumber(n)}</span>`)
+              .join("");
+
+            const matchedMarkup = compare
+              ? compare.matched
+                  .map((n) => `<span class="mini-number hit">${formatNumber(n)}</span>`)
+                  .join("") || `<span class="mini-number miss">Nenhum acerto</span>`
+              : "";
+
+            return `
+              <article class="card">
+                <div class="card__top">
+                  <div>
+                    <h3>${escapeHtml(cartela.nome)}</h3>
+                    <div class="meta">
+                      <span>${count}/50 números</span>
+                      <span>Criada em ${formatDate(cartela.createdAt)}</span>
+                      <span>Atualizada em ${formatDate(cartela.updatedAt)}</span>
+                    </div>
+                  </div>
+                  ${tag}
+                </div>
+
+                ${compare ? `<div class="meta"><span>${compare.hitCount} acertos com o resultado salvo</span></div>` : ""}
+                ${compare ? `<div class="card__numbers" aria-label="Números que bateram">${matchedMarkup}</div>` : ""}
+                <div class="card__numbers" aria-label="Números da cartela">${selectedMarkup}</div>
+
+                <div class="card__actions">
+                  <button type="button" class="btn secondary" data-action="edit" data-id="${cartela.id}">Editar</button>
+                  <button type="button" class="btn danger" data-action="delete" data-id="${cartela.id}">Excluir</button>
+                </div>
+              </article>
+            `;
+          })
+          .join("");
+
+        els.cartelasList.querySelectorAll("button[data-action]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const { action, id } = button.dataset;
+            if (action === "edit") {
+              startEdit(id);
+            } else if (action === "delete") {
+              deleteCartela(id);
+            }
+          });
+        });
+      }
+
+      function renderResultado() {
+        if (!state.resultado) {
+          els.resultadoResumo.innerHTML = `
+            <strong>Sem resultado salvo ainda</strong>
+            <p>Depois de registrar as 20 dezenas, a comparação com as cartelas aparece aqui em tempo real.</p>
+          `;
+          els.comparacaoList.innerHTML = `
+            <div class="empty-state">
+              Nenhum resultado foi registrado ainda. Quando você salvar as 20 dezenas, cada cartela será conferida automaticamente.
+            </div>
+          `;
+          return;
+        }
+
+        const comparisons = compareAll();
+        const best = comparisons.reduce((acc, item) => Math.max(acc, item.hitCount), 0);
+        const premiadas = comparisons.filter((item) => isPrize(item.hitCount)).length;
+        const sortedResult = state.resultado.numeros.slice().sort((a, b) => a - b);
+
+        els.resultadoResumo.innerHTML = `
+          <strong>Resultado salvo em ${formatDate(state.resultado.date)}</strong>
+          <p>
+            ${sortedResult.map((n) => formatNumber(n)).join(", ")}.
+            Maior acerto: ${best} | Cartelas premiadas: ${premiadas}.
+          </p>
+        `;
+
+        if (comparisons.length === 0) {
+          els.comparacaoList.innerHTML = `
+            <div class="empty-state">
+              O resultado está salvo, mas ainda não existe nenhuma cartela cadastrada para comparar.
+            </div>
+          `;
+          return;
+        }
+
+        els.comparacaoList.innerHTML = comparisons
+          .sort((a, b) => {
+            if (b.hitCount !== a.hitCount) return b.hitCount - a.hitCount;
+            return a.cartela.nome.localeCompare(b.cartela.nome);
+          })
+          .map((item) => {
+            const matchedMarkup = item.matched.length
+              ? item.matched.map((n) => `<span class="mini-number hit">${formatNumber(n)}</span>`).join("")
+              : `<span class="mini-number miss">Sem acertos</span>`;
+
+            return `
+              <article class="card">
+                <div class="card__top">
+                  <div>
+                    <h3>${escapeHtml(item.cartela.nome)}</h3>
+                    <div class="meta">
+                      <span>${item.hitCount} acertos</span>
+                      <span>${item.percentage}% da cartela</span>
+                    </div>
+                  </div>
+                  ${getTagMarkup(item.hitCount)}
+                </div>
+                <div class="card__numbers">${matchedMarkup}</div>
+                <div class="card__actions">
+                  <button type="button" class="btn secondary" data-action="edit" data-id="${item.cartela.id}">Editar cartela</button>
+                </div>
+              </article>
+            `;
+          })
+          .join("");
+
+        els.comparacaoList.querySelectorAll("button[data-action='edit']").forEach((button) => {
+          button.addEventListener("click", () => startEdit(button.dataset.id));
+        });
+      }
+
+      function toggleCartelaNumber(number) {
+        toggleDraftNumber(state.cartelaDraft.numeros, number, CARTELA_LIMIT);
+        renderAll();
+      }
+
+      function toggleResultadoNumber(number) {
+        toggleDraftNumber(state.resultadoDraft.numeros, number, RESULTADO_LIMIT);
+        renderAll();
+      }
+
+      function toggleDraftNumber(set, number, limit) {
+        if (set.has(number)) {
+          set.delete(number);
+          return;
+        }
+
+        if (set.size >= limit) {
+          return;
+        }
+
+        set.add(number);
+      }
+
+      function saveCartela() {
+        const nome = els.cartelaNome.value.trim();
+        const data = els.cartelaData.value || todayISO();
+        const numeros = normalizedNumbers(state.cartelaDraft.numeros);
+
+        if (!nome) {
+          showMessage(els.cartelaMessage, "Informe um nome para a cartela.", "error");
+          return;
+        }
+
+        if (numeros.length !== CARTELA_LIMIT) {
+          showMessage(els.cartelaMessage, `A cartela precisa ter exatamente ${CARTELA_LIMIT} números.`, "error");
+          return;
+        }
+
+        const now = new Date().toISOString();
+        const existingCartela = state.editingId
+          ? state.cartelas.find((item) => item.id === state.editingId)
+          : null;
+        const payload = {
+          id: state.editingId || makeId(),
+          nome,
+          dataCompra: data,
+          numeros,
+          createdAt: existingCartela ? existingCartela.createdAt || now : now,
+          updatedAt: now,
+        };
+
+        if (state.editingId) {
+          state.cartelas = state.cartelas.map((item) => (item.id === state.editingId ? payload : item));
+          showMessage(els.cartelaMessage, "Cartela atualizada com sucesso.", "success");
+        } else {
+          state.cartelas.push(payload);
+          showMessage(els.cartelaMessage, "Cartela salva com sucesso.", "success");
+        }
+
+        persistCartelas();
+        cancelEdit(false);
+        renderAll();
+      }
+
+      function saveResultado() {
+        const data = els.resultadoData.value || todayISO();
+        const numeros = normalizedNumbers(state.resultadoDraft.numeros);
+
+        if (numeros.length !== RESULTADO_LIMIT) {
+          showMessage(els.resultadoMessage, `O resultado precisa ter exatamente ${RESULTADO_LIMIT} números.`, "error");
+          return;
+        }
+
+        state.resultado = {
+          date: data,
+          numeros,
+          updatedAt: new Date().toISOString(),
+        };
+
+        persistResultado();
+        showMessage(els.resultadoMessage, "Resultado salvo e conferência atualizada.", "success");
+        renderAll();
+      }
+
+      function startEdit(id) {
+        const cartela = state.cartelas.find((item) => item.id === id);
+        if (!cartela) return;
+
+        state.editingId = id;
+        els.cartelaNome.value = cartela.nome;
+        els.cartelaData.value = cartela.dataCompra || todayISO();
+        state.cartelaDraft.numeros = new Set(cartela.numeros);
+        showMessage(els.cartelaMessage, `Editando ${cartela.nome}.`, "info");
+        renderAll();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function deleteCartela(id) {
+        const cartela = state.cartelas.find((item) => item.id === id);
+        if (!cartela) return;
+
+        const confirmed = window.confirm(`Excluir a cartela "${cartela.nome}"?`);
+        if (!confirmed) return;
+
+        state.cartelas = state.cartelas.filter((item) => item.id !== id);
+        persistCartelas();
+        if (state.editingId === id) {
+          cancelEdit(false);
+        }
+        showMessage(els.cartelaMessage, "Cartela excluída.", "success");
+        renderAll();
+      }
+
+      function cancelEdit(render = true) {
+        state.editingId = null;
+        els.cartelaNome.value = "";
+        els.cartelaData.value = todayISO();
+        resetCartelaDraft();
+        if (render) {
+          renderAll();
+        }
+      }
+
+      function resetCartelaDraft() {
+        state.cartelaDraft = newDraftCartela();
+      }
+
+      function resetResultadoDraft() {
+        state.resultadoDraft = newDraftResultado();
+        els.resultadoData.value = todayISO();
+      }
+
+      function newDraftCartela() {
+        return {
+          numeros: new Set(),
+        };
+      }
+
+      function newDraftResultado() {
+        return {
+          numeros: new Set(),
+        };
+      }
+
+      function renderNumberGrid(container, selectedSet, limit) {
+        const items = [];
+        for (let number = 0; number < TOTAL_NUMBERS; number += 1) {
+          const isSelected = selectedSet.has(number);
+          const isDisabled = !isSelected && selectedSet.size >= limit;
+          items.push(`
+            <button
+              type="button"
+              class="number-chip ${isSelected ? "is-selected" : ""} ${isDisabled ? "is-muted" : ""}"
+              data-number="${number}"
+              ${isDisabled ? "disabled" : ""}
+              aria-pressed="${isSelected ? "true" : "false"}"
+              aria-label="${formatNumber(number)}"
+            >
+              ${formatNumber(number)}
+            </button>
+          `);
+        }
+        container.innerHTML = items.join("");
+      }
+
+      function renderSelectedList(container, selectedSet) {
+        const numbers = normalizedNumbers(selectedSet);
+        if (numbers.length === 0) {
+          container.innerHTML = `<span class="helper-text">Nenhum número selecionado ainda.</span>`;
+          return;
+        }
+
+        container.innerHTML = numbers.map((number) => `<span class="chip">${formatNumber(number)}</span>`).join("");
+      }
+
+      function compareAll() {
+        if (!state.resultado) return [];
+        return state.cartelas.map((cartela) => compareCartela(cartela, state.resultado));
+      }
+
+      function compareCartela(cartela, resultado) {
+        const resultSet = new Set(resultado.numeros);
+        const matched = cartela.numeros.filter((number) => resultSet.has(number));
+        return {
+          cartela,
+          hitCount: matched.length,
+          matched,
+          missing: cartela.numeros.filter((number) => !resultSet.has(number)),
+          percentage: Math.round((matched.length / CARTELA_LIMIT) * 100),
+        };
+      }
+
+      function getTagMarkup(hitCount) {
+        if (hitCount === 0) {
+          return `<span class="tag good">Premiada: 0 acertos</span>`;
+        }
+
+        if (hitCount >= 15) {
+          return `<span class="tag good">${hitCount} acertos</span>`;
+        }
+
+        if (hitCount >= 10) {
+          return `<span class="tag warn">${hitCount} acertos</span>`;
+        }
+
+        return `<span class="tag">${hitCount} acertos</span>`;
+      }
+
+      function isPrize(hitCount) {
+        return PRIZE_HITS.has(hitCount);
+      }
+
+      function persistCartelas() {
+        storage.setItem(STORAGE_KEYS.cartelas, JSON.stringify(state.cartelas));
+      }
+
+      function persistResultado() {
+        storage.setItem(STORAGE_KEYS.resultado, JSON.stringify(state.resultado));
+      }
+
+      function readJSON(key, fallback) {
+        const raw = storage.getItem(key);
+        if (!raw) return fallback;
+        try {
+          return JSON.parse(raw);
+        } catch {
+          return fallback;
+        }
+      }
+
+      function showMessage(el, text, type) {
+        el.textContent = text;
+        el.className = `message ${type} is-visible`;
+      }
+
+      function normalizedNumbers(value) {
+        return Array.from(value).sort((a, b) => a - b);
+      }
+
+      function formatNumber(number) {
+        return pad2(number);
+      }
+
+      function formatDate(iso) {
+        if (!iso) return "-";
+        const date = parseDateValue(iso);
+        if (Number.isNaN(date.getTime())) return "-";
+        return new Intl.DateTimeFormat("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }).format(date);
+      }
+
+      function todayISO() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = pad2(now.getMonth() + 1);
+        const day = pad2(now.getDate());
+        return `${year}-${month}-${day}`;
+      }
+
+      function parseDateValue(value) {
+        if (typeof value !== "string") {
+          return new Date(value);
+        }
+
+        const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/;
+        const match = value.match(dateOnly);
+        if (match) {
+          const [, year, month, day] = match;
+          return new Date(Number(year), Number(month) - 1, Number(day));
+        }
+
+        return new Date(value);
+      }
+
+      function makeId() {
+        if (typeof crypto !== "undefined" && crypto.randomUUID) {
+          return crypto.randomUUID();
+        }
+        return `id_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function pad2(value) {
+        var text = String(value);
+        return text.length >= 2 ? text : "0" + text;
+      }
+
+      function getStorage() {
+        try {
+          const probe = "__lotomania_probe__";
+          window.localStorage.setItem(probe, "1");
+          window.localStorage.removeItem(probe);
+          return window.localStorage;
+        } catch {
+          const memory = {};
+          return {
+            getItem(key) {
+              return Object.prototype.hasOwnProperty.call(memory, key) ? memory[key] : null;
+            },
+            setItem(key, value) {
+              memory[key] = String(value);
+            },
+            removeItem(key) {
+              delete memory[key];
+            },
+          };
+        }
+      }
+    })();
+  </script>
+</body>
+</html>
